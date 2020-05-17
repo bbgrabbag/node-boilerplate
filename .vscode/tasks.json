@@ -13,7 +13,7 @@
         {
             "label": "test",
             "type": "shell",
-            "command": "npm t"
+            "command": "npm t",
         }
     ]
 }

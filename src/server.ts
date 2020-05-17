@@ -1,7 +1,8 @@
+
 import express from 'express'
+import http from 'http'
 
-export const server = express()
+export const app = express()
+export const server = http.createServer(app)
 
-server.get('/', (req, res) => {
-  res.status(200).send({ message: 'Connected!' })
-})
+app.use(express.json())
