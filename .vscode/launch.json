@@ -10,6 +10,7 @@
             "name": "nodemon",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon",
             "program": "${workspaceFolder}/dist/src/index.js",
+            "preLaunchTask": "watch",
             "restart": true,
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",

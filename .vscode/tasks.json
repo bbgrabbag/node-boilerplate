@@ -6,7 +6,9 @@
         {
             "label": "watch",
             "type": "shell",
-            "command": "npm run watch"
+            "command": "npm run watch",
+            "isBackground": true,
+            "problemMatcher":["$tsc-watch"]
         },
         {
             "label": "test",
