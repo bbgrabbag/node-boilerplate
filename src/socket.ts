@@ -2,7 +2,11 @@ import io from 'socket.io'
 
 export const socketServer = io()
 socketServer.on('connection', (client) => {
-  socketServer.on('ECHO', (msg: string) => {
-    socketServer.emit('ECHO', msg)
+  client.on('disconnect', () => {
+    client.broadcast.emit('CLIENT_DISCONNECTED', { socketId: client.id })
+  })
+
+  client.on('ECHO', (message: string) => {
+    socketServer.emit('ECHO', { message })
   })
 })

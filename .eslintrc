@@ -1,12 +1,12 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "extends": [
         "standard"
     ],
-    "ignorePatterns": ["*.spec.*"],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
