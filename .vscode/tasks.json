@@ -4,16 +4,23 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "watch",
+            "label": "watch:dev",
             "type": "shell",
-            "command": "npm run watch",
+            "command": "npm run watch:dev",
             "isBackground": true,
             "problemMatcher":["$tsc-watch"]
         },
         {
-            "label": "test",
+            "label": "watch:test",
             "type": "shell",
-            "command": "npm t",
+            "command": "npm run watch:test",
+            "isBackground": true,
+            "problemMatcher":["$tsc-watch"]
+        },
+        {
+            "label": "cleanup",
+            "type": "shell",
+            "command": "npm run cleanup",
         }
     ]
 }

@@ -4,11 +4,13 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "test": "tsc && jest --detectOpenHandles",
+    "test": "tsc --project tsconfig.test.json && node --inspect-brk ./node_modules/jest/bin/jest.js --detectOpenHandles --runInBand",
     "tsc": "tsc",
-    "watch": "tsc --watch",
+    "watch:dev": "tsc --project tsconfig.dev.json --watch",
+    "watch:test": "tsc --project tsconfig.test.json --watch",
     "eslint": "eslint",
-    "dev": "concurrently \"npm run watch\" \"nodemon --inspect ./dist/src/index.js\""
+    "dev": "concurrently \"npm run watch:dev\" \"nodemon --inspect-brk ./dev_build/index.js\"",
+    "cleanup": "rm -f ./*_build"
   },
   "author": "Ben Turner",
   "repository": {
@@ -59,7 +61,8 @@
     ],
     "verbose": true,
     "watch": [
-      "dist/src/*"
+      "dev_build/*",
+      "static/*"
     ],
     "env": {
       "NODE_ENV": "development"

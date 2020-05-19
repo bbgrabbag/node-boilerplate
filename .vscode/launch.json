@@ -6,13 +6,13 @@
     "configurations": [
         {
             "type": "node",
-            "name": "vscode-jest-tests",
+            "name": "Run Tests",
             "request": "launch",
             "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-            "preLaunchTask": "watch",
+            "preLaunchTask": "watch:test",
             "args": [
                 "--runInBand",
-                "--detectOpenHandles"
+                "--detectOpenHandles",
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
@@ -22,10 +22,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "nodemon",
+            "name": "Run Dev",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nodemon",
-            "program": "${workspaceFolder}/dist/src/index.js",
-            "preLaunchTask": "watch",
+            "program": "${workspaceFolder}/dev_build/index.js",
+            "preLaunchTask": "watch:dev",
             "restart": true,
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",

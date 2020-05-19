@@ -3,7 +3,7 @@ import http from 'http'
 import { createClient, registerEventListener } from '../utils'
 import { server } from '../../src/server'
 import { socketServer } from '../../src/socket'
-import '../../src/config'
+import '../test.config'
 
 describe('Server', () => {
   let runningServerInstance: http.Server
@@ -38,12 +38,12 @@ describe('Server', () => {
     })
   })
 
-  it('Should communicate', async () => {
+  it('Should broadcast events to all other clients', async () => {
     expect.assertions(3)
     const echoEventListeners = clients.map(client => registerEventListener<{message:string}>(client, 'ECHO'))
-    clients[0].emit('ECHO', 'test')
+    clients[0].emit('ECHO', 'Marco!')
     const responses = await Promise.all(echoEventListeners)
-    responses.forEach(response => expect(response.message).toBe('test'))
+    responses.forEach(response => expect(response.message).toBe('Polo!'))
   })
 
   it('Should notify all other clients of socket disconnection', async () => {
