@@ -10,7 +10,7 @@
     "watch:test": "tsc --project tsconfig.test.json --watch",
     "eslint": "eslint",
     "dev": "concurrently \"npm run watch:dev\" \"nodemon --inspect-brk ./dev_build/index.js\"",
-    "cleanup": "rm -f ./*_build"
+    "cleanup": "powershell Remove-Item  -Path ./*_build -Recurse"
   },
   "author": "Ben Turner",
   "repository": {
