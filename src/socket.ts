@@ -21,7 +21,7 @@ socketServer.on('connection', (socket) => {
       socketId: socket.id,
       clientId: socket.client.id,
       name: 'CLIENT_DISCONNECTED',
-      message: `ID:${socket.client.id} has disconnected`
+      message: 'User has disconnected'
     })
   })
 

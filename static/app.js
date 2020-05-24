@@ -5,12 +5,12 @@ const emissions = document.getElementById('emissions')
 
 const renderEvent = (event) => {
   const el = document.createElement('p')
-  el.innerText = `${event.name}: ID:${event.socketId} ${event.message}`
+  el.innerText = `${event.name}: ID${event.clientId} ${event.message}`
   return el
 }
 
-client.on('connect', () => {
-  events.appendChild(renderEvent({ socketId: 'SERVER', name: 'connect', message: `Client ID:${client.id} has connected.` }))
+client.on('connection', (event) => {
+  events.appendChild(renderEvent(event))
 })
 
 client.on('CLIENT_DISCONNECTED', (event) => {
