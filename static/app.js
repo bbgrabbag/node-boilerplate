@@ -17,7 +17,7 @@ client.on('CLIENT_DISCONNECTED', (event) => {
   events.appendChild(renderEvent(event))
 })
 
-client.on('ECHO', (event) => {
+client.on('POLO', (event) => {
   events.appendChild(renderEvent(event))
 })
 
@@ -25,4 +25,4 @@ client.on('NEW_GUEST', (event) => {
   events.appendChild(renderEvent(event))
 })
 
-emissions.echo.addEventListener('click', () => client.emit('ECHO', 'Marco!'))
+emissions.echo.addEventListener('click', () => client.emit('MARCO'))
