@@ -1,57 +1,79 @@
 // eslint-disable-next-line no-unused-vars
 import http from 'http'
-import { createClient, registerEventListener } from '../utils'
+import { createClient } from '../utils'
 import { server } from '../../src/server'
 import { socketServer } from '../../src/socket'
 import '../test.config'
 
 describe('Server', () => {
   let runningServerInstance: http.Server
-  let clients: SocketIOClient.Socket[] = []
 
-  beforeAll((done) => {
-    runningServerInstance = server.listen(process.env.PORT, done)
-    socketServer.attach(runningServerInstance)
+  beforeEach(async () => {
+    runningServerInstance = server.listen(process.env.PORT)
+    socketServer.listen(runningServerInstance)
   })
 
-  afterAll((done) => {
-    runningServerInstance.close(done)
-    socketServer.close(done)
+  afterEach(async () => {
+    runningServerInstance.close()
+    socketServer.close()
   })
 
-  beforeEach(async (done) => {
-    clients = await Promise.all(
-      Array.from(Array(3)).map(() => createClient())
-    )
-    done()
+  it('Should emit a connection event when a new client socket connects', async () => {
+    expect.assertions(4)
+    const client = createClient(['connect', 'connection'])
+    const newGuestEvent = await client.registry.connection
+
+    expect(client.socket.connected).toBe(true)
+    expect(newGuestEvent.clientId).toBe(client.socket.id)
+    expect(newGuestEvent.name).toBe('connection')
+    expect(newGuestEvent.message).toBe('Welcome new user!')
   })
 
-  afterEach((done) => {
-    clients.forEach(c => c.disconnected && c.disconnect())
-    clients = []
-    done()
-  })
+  it('Should notify other sockets when a new client has joined', async () => {
+    expect.assertions(3)
+    const client1 = createClient(['connect', 'NEW_GUEST'])
+    await client1.registry.connect
+    const client2 = createClient([])
+    const newGuestEvent = await client1.registry.NEW_GUEST
 
-  it('Should connect', () => {
-    clients.forEach(client => {
-      expect(client.connected).toBe(true)
+    expect(newGuestEvent.clientId).toBe(client2.socket.id)
+    expect(newGuestEvent.name).toBe('NEW_GUEST')
+    expect(newGuestEvent.message).toBe('New user has connected')
+  })
+  it('Should broadcast events to all other clients', async () => {
+    expect.assertions(6)
+    const sender = createClient(['connect'])
+    const receivers = Array.from(Array(3)).map(() => createClient(['POLO']))
+    sender.socket.emit('MARCO')
+
+    const events = await Promise.all(receivers.map(async receiver => {
+      return await receiver.registry.POLO
+    }))
+
+    events.forEach(event => {
+      expect(event.name).toBe('POLO')
+      expect(event.clientId).toBe(sender.socket.id)
     })
   })
 
-  it('Should broadcast events to all other clients', async () => {
-    expect.assertions(3)
-    const echoEventListeners = clients.map(client => registerEventListener<{message:string}>(client, 'ECHO'))
-    clients[0].emit('ECHO', 'Marco!')
-    const responses = await Promise.all(echoEventListeners)
-    responses.forEach(response => expect(response.message).toBe('Polo!'))
-  })
-
   it('Should notify all other clients of socket disconnection', async () => {
-    expect.assertions(2)
-    const discEventListeners = clients.filter((_, i) => i !== 0).map(client => registerEventListener<{socketId: string}>(client, 'CLIENT_DISCONNECTED'))
-    const discClientId = clients[0].id
-    clients[0].disconnect()
-    const responses = await Promise.all(discEventListeners)
-    responses.forEach(response => expect(response.socketId).toBe(discClientId))
+    expect.assertions(16)
+    const leaver = createClient(['connect'])
+    const stayers = Array.from(Array(5)).map(() => createClient(['CLIENT_DISCONNECTED']))
+    await leaver.registry.connect
+    const idToRemove = leaver.socket.id
+    leaver.socket.disconnect()
+
+    expect(leaver.socket.disconnected).toBe(true)
+
+    const events = await Promise.all(stayers.map(async stayer => {
+      return await stayer.registry.CLIENT_DISCONNECTED
+    }))
+
+    events.forEach(event => {
+      expect(event.socketId).toBe(idToRemove)
+      expect(event.name).toBe('CLIENT_DISCONNECTED')
+      expect(event.message).toBe(`ID:${idToRemove} has disconnected`)
+    })
   })
 })

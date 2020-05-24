@@ -1,32 +1,36 @@
 import io from 'socket.io'
 
 export const socketServer = io()
-socketServer.on('connection', (client) => {
-  client.broadcast.emit('NEW_GUEST', {
-    socketId: 'SERVER',
+socketServer.on('connection', (socket) => {
+  socket.broadcast.emit('NEW_GUEST', {
+    socketId: socket.id,
+    clientId: socket.client.id,
     name: 'NEW_GUEST',
     message: 'New user has connected'
   })
 
-  client.emit('NEW_GUEST', {
-    socketId: 'SERVER',
-    name: 'NEW_GUEST',
+  socket.emit('connection', {
+    socketId: socket.id,
+    clientId: socket.client.id,
+    name: 'connection',
     message: 'Welcome new user!'
   })
 
-  client.on('disconnect', () => {
-    client.broadcast.emit('CLIENT_DISCONNECTED', {
-      socketId: client.id,
+  socket.on('disconnect', () => {
+    socketServer.emit('CLIENT_DISCONNECTED', {
+      socketId: socket.id,
+      clientId: socket.client.id,
       name: 'CLIENT_DISCONNECTED',
-      message: `ID:${client.id} has disconnected`
+      message: `ID:${socket.client.id} has disconnected`
     })
   })
 
-  client.on('ECHO', (message: string) => {
-    socketServer.emit('ECHO', {
-      socketId: client.id,
+  socket.on('MARCO', () => {
+    socket.broadcast.emit('POLO', {
+      socketId: socket.id,
+      clientId: socket.client.id,
       message: 'Polo!',
-      name: 'ECHO'
+      name: 'POLO'
     })
   })
 })
